@@ -1,2 +1,3 @@
-# nixcfg
-Not too personal NixOS and Home-manager config
+# NixOS Configs (and Home-Manager)
+
+Dont forget to clone AGS and replace options.ts
