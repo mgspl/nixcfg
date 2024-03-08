@@ -12,6 +12,8 @@
       ./nvidia.nix
       ./steam.nix
       ./greeter.nix
+      ./ananicy.nix
+      ./zram.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -35,23 +37,36 @@
 
   networking = { 
     hostName = "digitalis";
-    hostFiles = [ (pkgs.fetchurl {url = "https://hblock.molinero.dev/hosts"; hash = "sha256-wpMFLKicLutUG1NcL3P+4tUlfKLA7+imxMj3JJmEw7Y";}) ];
+    hostFiles = [ (pkgs.fetchurl {url = "https://hblock.molinero.dev/hosts"; hash = "sha256-JZgPvOeSybfvjxpX+HAY8BLub+1DFcheoBxlyC0IGiI";}) ];
     networkmanager.enable = true;  
   };
+
+  # Um mano no reddit diz que isso faz conectar em wifi enterprise 
+  systemd.services.wpa_supplicant.environment.OPENSSL_CONF = pkgs.writeText"openssl.cnf"''
+    openssl_conf = openssl_init
+    [openssl_init]
+    ssl_conf = ssl_sect
+    [ssl_sect]
+    system_default = system_default_sect
+    [system_default_sect]
+    Options = UnsafeLegacyRenegotiation
+    [system_default_sect]
+    CipherString = Default:@SECLEVEL=0
+  '';
 
   # Set your time zone.
   time.timeZone = "America/Sao_Paulo";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "pt_BR.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "br";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
+  console = {
+     font = "Lat2-Terminus16";
+     # keyMap = "br";
+     useXkbConfig = true; # use xkb.options in tty.
+  };
 
   # Configure keymap in X11
-  # services.xserver.xkb.layout = "br";
+  services.xserver.xkb.layout = "br";
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
@@ -97,10 +112,10 @@
 
 
   # Comment in installation, manually create a user
-  #users.users.miguel = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
-  #};
+  users.users.miguel = {
+     isNormalUser = true;
+     extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+  };
 
   environment.systemPackages = with pkgs; [
      neovim
@@ -108,9 +123,6 @@
      wget
      git
   ];
-
-  # Enable Zram
-  zramSwap.enable = true;  
 
   # Enable App Armor 
   security.apparmor = {

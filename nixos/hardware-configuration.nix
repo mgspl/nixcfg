@@ -14,13 +14,13 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "UUID=1b4586ab-f17f-47ee-a8e3-b694282b1d67";
+    { device = "UUID=2606fb0e-aa8f-4d51-968f-4e14148666d6";
       fsType = "bcachefs";
       options = [ "compression=zstd" ];
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/FDC2-2FEC";
+    { device = "/dev/disk/by-uuid/019E-8AB2";
       fsType = "vfat";
     };
 

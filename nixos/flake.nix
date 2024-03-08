@@ -3,7 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    chaotic.url = "https://flakehub.com/f/chaotic-cx/nyx/*.tar.gz";
     hyprland.url = "github:hyprwm/Hyprland";
     ags.url = "github:Aylur/ags";
   };
