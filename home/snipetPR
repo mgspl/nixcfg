@@ -1,0 +1,10 @@
+let 
+  patchLvim = import (pkgs.fetchFromGitHub {
+    owner = "NixOS";
+    repo = "nixpkgs";
+    rev = "54d46819992676455aa5e6709983b2e14b65d188";
+    hash = "sha256-e0rDrAJuKRa4jliZG77/rWzrYXEFHPsN/iUN3AZ5XFs=";
+  }) {
+    inherit (pkgs) system;
+  };
+  in
