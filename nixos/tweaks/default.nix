@@ -1,0 +1,7 @@
+{
+  imports = [
+    ./performance
+    #./catppuccin
+    ./graphic
+  ];
+}

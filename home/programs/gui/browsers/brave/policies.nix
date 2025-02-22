@@ -1,0 +1,14 @@
+{
+  programs.chromium = {
+    enable = true;
+    extraOpts = {
+      "BraveRewardsDisabled" = true;
+      "BraveWalletDisabled" = true;
+      "BraveVPNDisabled" = 1;
+      "BraveAIChatEnabled" = false;
+      "TorDisabled" = true;
+      "PasswordManagerEnabled" = false;
+      "DnsOverHttpsMode" = "automatic";
+    };
+  };
+}

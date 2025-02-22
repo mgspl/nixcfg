@@ -1,32 +1,24 @@
-{ config, pkgs, inputs, ... }:
 {
+  config,
+  pkgs,
+  inputs,
+  username,
+  ...
+}: {
   # add the home manager module
   imports = [
-    ./home/hyprland.nix
-    ./home/hyprlock.nix
-    ./home/hypridle.nix
-    ./home/packages.nix
-    ./home/portals.nix
-    ./home/kitty.nix
-    ./home/starship.nix
-    ./home/catppuccin.nix
-    ./home/btop.nix
-    ./home/mpv.nix
-    ./home/rofi.nix
-    ./home/kdeconnect.nix
-    ./home/arrpc.nix
-    #./home/nvim.nix
+    ./home/default.nix
   ];
 
-  home.username = "miguel";
-  home.homeDirectory = "/home/miguel";
+  home.username = "${username}";
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "23.05"; # Please read the comment before changing.
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    EDITOR = "lvim";
+    EDITOR = "nvim";
     TERMINAL = "kitty";
-    XDG_SESSION_TYPE  = "wayland";
+    XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_DESKTOP = "Hyprland";
     GDK_BACKEND = "wayland";
@@ -34,7 +26,7 @@
     QT_QPA_PLATFORM = "wayland;xcb";
     QT_WAYLAND_FORCE_DPI = "physical";
     #QT_QPA_PLATFORMTHEME = "qt5ct";
-    SDL_VIDEODRIVER = "wayland";
+    SDL_VIDEODRIVER = "wayland,x11";
     CLUTTER_BACKEND = "wayland";
     TERM = "kitty";
     GSK_RENDERER = "ngl";
@@ -43,14 +35,14 @@
   programs.bash = {
     enable = true;
     sessionVariables = {
-      EDITOR = "lvim";
+      EDITOR = "nvim";
       TERMINAL = "kitty";
       TERM = "kitty";
     };
   };
-  
+
   # Allow Unfree
- # nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
   # Need this or dont build a new generation
   #nix.package = pkgs.nix;
   # Let Home Manager install and manage itself.

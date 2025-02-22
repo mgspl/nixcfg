@@ -1,28 +1,21 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-{ config, lib, pkgs, ... }:
-
-{
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./hyprland.nix
-      ./nvidia.nix
-      ./steam.nix
-      ./greeter.nix
-      ./ananicy.nix
-      ./zram.nix
-      ./scx.nix
-      ./nh.nix
-    ];
+{pkgs, ...}: {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./nixos
+    ./pkgs
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot = {
     tmp.cleanOnBoot = true;
-    kernelPackages = pkgs.linuxPackages_cachyos;
-    kernelParams = [ "pcie_aspm=off" "SYSTEMD_CGROUP_ENABLE_LEGACY_FORCE=1" ];
+    kernelPackages = pkgs.linuxPackages_cachyos-lto;
+    kernelParams = [
+      "quiet"
+      "pcie_aspm=off"
+      "plymouth.use-simpledrm"
+      "i915.enable_guc=2"
+    ];
     loader = {
       timeout = 3;
       efi.canTouchEfiVariables = true;
@@ -34,16 +27,33 @@
     plymouth = {
       enable = true;
     };
+    initrd.systemd.extraConfig = "DefaultTimeoutStartSec=15s
+                                  DefaultTimeoutStopSec=10s
+                                  DefaultLimitNOFILE=2048:2097152";
   };
 
-  networking = { 
+  # Catppuccin theme for plymouth
+  catppuccin.plymouth.enable = true;
+
+  networking = {
     hostName = "digitalis";
-    hostFiles = [ (pkgs.fetchurl {url = "https://hblock.molinero.dev/hosts"; hash = "sha256-Eq1GCKiKOEq2l+7iJMJrf34jyjWUdqqD1xldLyc8aws=";}) ];
-    networkmanager.enable = true;  
+    hostFiles = [
+      (pkgs.fetchurl {
+        url = "https://hblock.molinero.dev/hosts";
+        hash = "sha256-nEeKkzCdR4w9CYSA13uMmUi+k1frLmlAszf6oLKODi0=";
+      })
+    ];
+    networkmanager = {
+      enable = true;
+      wifi = {
+        backend = "wpa_supplicant";
+        powersave = false;
+      };
+    };
   };
 
-  # Um mano no reddit diz que isso faz conectar em wifi enterprise 
-  systemd.services.wpa_supplicant.environment.OPENSSL_CONF = pkgs.writeText"openssl.cnf"''
+  # Um mano no reddit diz que isso faz conectar em wifi enterprise
+  systemd.services.wpa_supplicant.environment.OPENSSL_CONF = pkgs.writeText "openssl.cnf" ''
     openssl_conf = openssl_init
     [openssl_init]
     ssl_conf = ssl_sect
@@ -61,31 +71,41 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "pt_BR.UTF-8";
   console = {
-     font = "Lat2-Terminus16";
-     # keyMap = "br";
-     useXkbConfig = true; # use xkb.options in tty.
+    font = "Lat2-Terminus16";
+    # keyMap = "br";
+    useXkbConfig = true; # use xkb.options in tty.
   };
 
   # Configure keymap in X11
-  services.xserver.xkb.layout = "br";
+  services = {
+    xserver.xkb.layout = "br";
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+      jack.enable = true;
+    };
+    fstrim = {
+      enable = true;
+      interval = "weekly"; # the default
+    };
+  };
 
-# Enable sound.
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true; 
-    jack.enable = true;
-   };
-
+  security = {
+    rtkit.enable = true;
+    pam.services.kwallet = {
+      name = "kdewallet";
+      enableKwallet = true;
+    };
+  };
 
   # bluetooth
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = false;
   };
-  
+
   # nix configs
   nix = {
     gc = {
@@ -97,42 +117,38 @@
       experimental-features = "nix-command flakes";
       auto-optimise-store = true;
       substituters = [
-        "https://hyprland.cachix.org" 
+        "https://hyprland.cachix.org"
       ];
-      trusted-public-keys = [ 
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" 
+      trusted-public-keys = [
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       ];
     };
   };
 
-  # Allow unfree 
+  # Allow unfree
   nixpkgs.config.allowUnfree = true;
   # Nix
   documentation.nixos.enable = false;
 
-
   # Comment in installation, manually create a user
   users.users.miguel = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+    isNormalUser = true;
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ]; # Enable ‘sudo’ for the user.
   };
 
-  environment.pathsToLink = [ "/share/bash-completion" ];
+  environment.pathsToLink = ["/share/bash-completion"];
 
   environment.systemPackages = with pkgs; [
-     neovim
-     wget
-     git
-     wl-clipboard
+    neovim
+    wget
+    git
+    wl-clipboard
   ];
-  
-  # Enable TRIM
-  services.fstrim = {
-    enable = true;
-    interval = "weekly"; # the default
-  };
 
-  # Enable App Armor 
+  # Enable App Armor
   security.apparmor = {
     enable = true;
     killUnconfinedConfinables = true;
@@ -143,9 +159,14 @@
 
   # kde connect
   networking.firewall = rec {
-    allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
+    allowedTCPPortRanges = [
+      {
+        from = 1714;
+        to = 1764;
+      }
+    ];
     allowedUDPPortRanges = allowedTCPPortRanges;
   };
 
-  system.stateVersion = "23.11"; 
+  system.stateVersion = "23.11";
 }
