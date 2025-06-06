@@ -1,7 +1,0 @@
-{
-  imports = [
-    #./bruno
-    #./intellij
-    #./zed
-  ];
-}

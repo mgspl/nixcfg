@@ -1,7 +1,0 @@
-{
-  imports = [
-    ./mpv
-    ./fuzzel
-    ./hyprlock
-  ];
-}

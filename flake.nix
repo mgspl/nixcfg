@@ -1,18 +1,20 @@
 {
-  description = "digitalis";
-
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    #nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     catppuccin.url = "github:catppuccin/nix";
-    hyprland.url = "github:hyprwm/Hyprland";
+    nix-proton-cachyos.url =
+      "github:jbgi/nix-proton-cachyos?rev=58a15c234eb69acd16b9860e1a7da48562b5f784";
     betterfox.url = "github:HeitorAugustoLN/betterfox-nix";
-    nix-proton-cachyos.url = "github:kimjongbing/nix-proton-cachyos";
-    zen-browser.url = "github:0xc000022070/zen-browser-flake";
+
+    nvf = {
+      url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.92.0.tar.gz";
+      url =
+        "https://git.lix.systems/lix-project/nixos-module/archive/2.93.0.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -20,61 +22,30 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-  };
 
-  outputs = {
-    nixpkgs,
-    #nixpkgs-stable,
-    chaotic,
-    lix-module,
-    catppuccin,
-    home-manager,
-    betterfox,
-    ...
-  } @ inputs: let
-    username = "miguel";
-    prettyname = "Miguel";
-  in {
-    nixosConfigurations = {
-      digitalis = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs username;
-        };
-        modules = [
-          ./configuration.nix # Your system configuration.
-          {nixpkgs.hostPlatform = "x86_64-linux";}
-          catppuccin.nixosModules.catppuccin # Export Catppuccin Module
-          chaotic.nixosModules.default # Export Chaotic Module
-          lix-module.nixosModules.default # Export LIX module
-          # Home Manager Modules Config
-          home-manager.nixosModules.home-manager
-          {
-            #home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "bkp";
-            home-manager.users.${username} = {
-              imports = [
-                ./home.nix
-                catppuccin.homeManagerModules.catppuccin
-                chaotic.homeManagerModules.default
-                # nvf.homeManagerModules.default # Export NvF module
-              ];
-            };
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-              inherit username;
-              inherit prettyname;
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
 
-              /*
-                pkgs-stable = import nixpkgs-stable {
-                inherit system;
-                config.allowUnfree = true;
-              };
-              */
-            };
-          }
-        ];
+    ez-configs = {
+      url = "github:ehllie/ez-configs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
       };
     };
   };
+
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ inputs.ez-configs.flakeModule ];
+      systems = [ "x86_64-linux" ];
+
+      ezConfigs = {
+        root = ./.;
+        globalArgs = { inherit inputs; };
+        nixos.hosts.digitalis.userHomeModules = { miguel = "miguel"; };
+      };
+    };
 }
