@@ -2,7 +2,6 @@
   lib,
   pkgs,
   config,
-  inputs,
   ...
 }: let
   inherit (lib.strings) optionalString makeBinPath;
@@ -35,7 +34,8 @@ in {
     enableRenice = false;
 
     settings = {
-      general = {
+      /*
+        general = {
         reaper = 30;
         desiredgov = "performance";
         igpu_power_treshhold = -1;
@@ -44,6 +44,7 @@ in {
         renice = 15;
         disable_splitlock = 1;
       };
+      */
       custom = {
         start = startscript.outPath;
         end = endscript.outPath;

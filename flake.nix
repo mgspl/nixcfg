@@ -1,11 +1,26 @@
 {
   inputs = {
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    #nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     catppuccin.url = "github:catppuccin/nix";
-    nix-proton-cachyos.url =
-      "github:jbgi/nix-proton-cachyos?rev=58a15c234eb69acd16b9860e1a7da48562b5f784";
     betterfox.url = "github:HeitorAugustoLN/betterfox-nix";
+    maomaowm = {
+      url = "github:DreamMaoMao/maomaowm";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    /*
+      android-nixpkgs = {
+      url = "github:tadfisher/android-nixpkgs/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    */
+
+    rycee-nurpkgs = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nvf = {
       url = "github:notashelf/nvf";
@@ -13,8 +28,7 @@
     };
 
     lix-module = {
-      url =
-        "https://git.lix.systems/lix-project/nixos-module/archive/2.93.0.tar.gz";
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.2-1.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -38,14 +52,16 @@
   };
 
   outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ inputs.ez-configs.flakeModule ];
-      systems = [ "x86_64-linux" ];
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [
+        inputs.ez-configs.flakeModule
+      ];
+      systems = ["x86_64-linux"];
 
       ezConfigs = {
         root = ./.;
-        globalArgs = { inherit inputs; };
-        nixos.hosts.digitalis.userHomeModules = { miguel = "miguel"; };
+        globalArgs = {inherit inputs;};
+        nixos.hosts.digitalis.userHomeModules = {miguel = "miguel";};
       };
     };
 }

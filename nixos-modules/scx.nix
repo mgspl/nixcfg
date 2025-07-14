@@ -1,8 +1,9 @@
 {pkgs, ...}: {
   services.scx = {
     enable = true;
-    scheduler = "scx_lavd";
+    scheduler = "scx_rustland";
     package = pkgs.scx.rustscheds;
-    extraArgs = ["--autopower"];
+    # LAVD args Rustland doenst support flags
+    #extraArgs = ["--autopower"];
   };
 }

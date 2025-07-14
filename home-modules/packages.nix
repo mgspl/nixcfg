@@ -1,11 +1,11 @@
-{ pkgs, inputs, ... }: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     # Programs
-    firedragon
-    goofcord
+    dorion
     loupe
     nautilus
     papers
+    losslesscut-bin
 
     # Tools
     networkmanagerapplet
@@ -22,12 +22,12 @@
 
     # Compositor
     playerctl
-    grimblast
     clipse
     pwvucontrol
     imagemagick
     wl-clipboard
     xdg-utils
+    xdg-user-dirs
     brightnessctl
   ];
 }

@@ -9,18 +9,19 @@
           formatOnSave = true;
           lightbulb.enable = true;
           trouble.enable = true;
-          lspSignature.enable = true;
+          lspSignature.enable = false;
+          otter-nvim.enable = true;
         };
         languages = {
-          enableLSP = true;
           enableFormat = true;
           enableTreesitter = true;
           enableExtraDiagnostics = true;
 
           bash.enable = true;
-          css.enable = true;
+          #css.enable = true;
           nix.enable = true;
-          python.enable = false;
+          #markdown.enable = true;
+          #python.enable = false;
         };
         visuals = {
           nvim-web-devicons.enable = true;
@@ -46,7 +47,10 @@
         };
         autopairs.nvim-autopairs.enable = true;
 
-        autocomplete.nvim-cmp.enable = true;
+        autocomplete.blink-cmp = {
+          enable = true;
+          setupOpts.signature.enabled = true;
+        };
         snippets.luasnip.enable = true;
 
         filetree.nvimTree = {
@@ -60,24 +64,30 @@
           };
         };
 
-        tabline = { nvimBufferline.enable = true; };
+        tabline = {nvimBufferline.enable = true;};
 
         treesitter.context.enable = true;
 
         telescope.enable = true;
 
+        git = {
+          enable = true;
+          gitsigns.enable = true;
+          gitsigns.codeActions.enable = false;
+        };
+
         minimap = {
-          minimap-vim.enable = true;
-          codewindow.enable =
-            false; # lighter, faster, and uses lua for configuration
+          minimap-vim.enable = false;
+          codewindow.enable = false; # lighter, faster, and uses lua for configuration
         };
 
         dashboard.alpha.enable = true;
 
         utility = {
           motion = {
-            hop.enable = true;
+            hop.enable = false;
             leap.enable = true;
+            precognition.enable = false;
           };
         };
 
@@ -85,6 +95,7 @@
           enable = true;
           mappings.open = "<leader>t";
           setupOpts.direction = "float";
+          lazygit.enable = true;
         };
 
         ui = {
@@ -97,25 +108,35 @@
             navbuddy.enable = true;
           };
           smartcolumn = {
-            enable = false;
+            enable = true;
             setupOpts.custom_colorcolumn = {
               # this is a freeform module, it's `buftype = int;` for configuring column position
               nix = "110";
               ruby = "120";
               java = "130";
-              go = [ "90" "130" ];
+              go = ["90" "130"];
             };
           };
           fastaction.enable = true;
         };
 
-        comments = { comment-nvim.enable = true; };
+        clipboard = {
+          enable = true;
+          providers.wl-copy.enable = true;
+        };
+
+        globals = {
+          shiftwidth = 4;
+          tabstop = 4;
+          wrap = false;
+        };
+
+        comments = {comment-nvim.enable = true;};
         binds.whichKey.enable = true;
         lineNumberMode = "number";
         notify.nvim-notify.enable = true;
         syntaxHighlighting = true;
         undoFile.enable = true;
-        #useSystemClipboard = true;
         withPython3 = true;
       };
     };

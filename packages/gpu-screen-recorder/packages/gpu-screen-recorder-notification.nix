@@ -10,15 +10,17 @@
   libXrandr,
   libXext,
   libglvnd,
+  wayland-scanner,
+  wayland,
   gitUpdater,
 }:
 stdenv.mkDerivation rec {
   pname = "gpu-screen-recorder-notification";
-  version = "1.0.5";
+  version = "1.0.7";
 
   src = fetchurl {
     url = "https://dec05eba.com/snapshot/${pname}.git.${version}.tar.gz";
-    hash = "sha256-dEZQilTjA3jMbRrQXrwq708A3+Ieh8HBZr29ubAxzb4=";
+    hash = "sha256-zeL15/rSPasZ98FWkG4BMlBxszvZJS8MGr6557OGeE4=";
   };
 
   sourceRoot = ".";
@@ -42,6 +44,8 @@ stdenv.mkDerivation rec {
     libXrandr
     libXext
     libglvnd
+    wayland-scanner
+    wayland
   ];
 
   passthru.updateScript = gitUpdater {url = "https://repo.dec05eba.com/${pname}";};

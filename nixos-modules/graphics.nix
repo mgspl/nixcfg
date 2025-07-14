@@ -1,4 +1,17 @@
-{ config, pkgs, ... }: {
+{
+  config,
+  pkgs,
+  ...
+}: {
+  # Firmware
+  hardware.cpu.intel.updateMicrocode = true;
+  hardware.enableRedistributableFirmware = true;
+
+  services.fwupd = {
+    enable = true;
+    daemonSettings.EspLocation = config.boot.loader.efi.efiSysMountPoint;
+  };
+
   # nvidia
   hardware.graphics = {
     enable = true;
@@ -7,12 +20,13 @@
       intel-vaapi-driver
       vaapiVdpau
       libvdpau-va-gl
+      intel-media-sdk
     ];
   };
 
-  environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; };
+  environment.sessionVariables = {LIBVA_DRIVER_NAME = "iHD";};
 
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
     prime = {
@@ -24,10 +38,10 @@
 
     modesetting.enable = true;
 
-    powerManagement = { enable = false; };
+    powerManagement = {enable = false;};
 
     open = false;
     nvidiaSettings = false; # gui app
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
 }

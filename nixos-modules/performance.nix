@@ -1,7 +1,8 @@
 {lib, ...}: {
   zramSwap = {
     enable = true;
-    memoryPercent = 25;
+    algorithm = "zstd";
+    memoryPercent = 15;
   };
 
   systemd.oomd = {
@@ -27,7 +28,6 @@
     "vm.max_map_count" = 16777216;
 
     "kernel.nmi_watchdog" = 0;
-    "kernel.sched_cfs_bandwidth_slice_us" = 3000;
     "kernel.unprivileged_userns_clone" = 1;
     "kernel.kptr_restrict" = 2;
 
@@ -45,14 +45,23 @@
 
   #udev rules from CachyOS
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="scsi_host", KERNEL=="host*", ATTR{link_power_management_policy}=="*",  ATTR{link_power_management_policy}="max_performance"
+            SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="0", TEST=="/sys/module/snd_hda_intel", \
+        RUN+="/bin/sh -c 'echo $$(cat /run/udev/snd-hda-intel-powersave 2>/dev/null || \
+            echo 10) > /sys/module/snd_hda_intel/parameters/power_save'"
 
-    ACTION=="add|change", KERNEL=="sd[a-z]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+    SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="1", TEST=="/sys/module/snd_hda_intel", \
+        RUN+="/bin/sh -c '[[ $$(cat /sys/module/snd_hda_intel/parameters/power_save) != 0 ]] && \
+            echo $$(cat /sys/module/snd_hda_intel/parameters/power_save) > /run/udev/snd-hda-intel-powersave; \
+            echo 0 > /sys/module/snd_hda_intel/parameters/power_save'"
 
-    ACTION=="add|bind", SUBSYSTEM=="pci", DRIVERS=="nvidia", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", TEST=="power/control", ATTR{power/control}="auto"
-    ACTION=="remove|unbind", SUBSYSTEM=="pci", DRIVERS=="nvidia", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", TEST=="power/control", ATTR{power/control}="on"
+        ACTION=="add", SUBSYSTEM=="scsi_host", KERNEL=="host*", ATTR{link_power_management_policy}=="*",  ATTR{link_power_management_policy}="max_performance"
 
-    DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
+        ACTION=="add|change", KERNEL=="sd[a-z]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+
+        ACTION=="add|bind", SUBSYSTEM=="pci", DRIVERS=="nvidia", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", TEST=="power/control", ATTR{power/control}="auto"
+        ACTION=="remove|unbind", SUBSYSTEM=="pci", DRIVERS=="nvidia", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", TEST=="power/control", ATTR{power/control}="on"
+
+        DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
   '';
 
   #Nvidia modprobe tweaks from Cachy
@@ -60,7 +69,7 @@
     blacklist iTCO_wdt
 
     options nvidia NVreg_UsePageAttributeTable=1 NVreg_InitializeSystemMemoryAllocations=0 NVreg_DynamicPowerManagement=0x02 NVreg_EnableGpuFirmware=0
-    options nvidia_drm modeset=1 
+    options nvidia_drm modeset=1
   '';
 
   # Enable wireless database

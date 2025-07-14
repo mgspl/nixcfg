@@ -1,5 +1,5 @@
-{ pkgs, ... }: {
-  home.packages = with pkgs; [ swaybg autotiling wlogout ];
+{pkgs, ...}: {
+  home.packages = with pkgs; [swaybg autotiling wayfreeze grim slurp];
 
   wayland.windowManager.sway = {
     enable = true;
@@ -12,7 +12,46 @@
     config = {
       modifier = "Mod4";
 
-      bars = [ ];
+      bars = [];
+
+      colors = {
+        background = "#1e1e2e";
+        focused = {
+          background = "#1e1e2e";
+          border = "#89b4fa";
+          childBorder = "#89b4fa";
+          indicator = "#89b4fa";
+          text = "#cdd6f4";
+        };
+        focusedInactive = {
+          background = "#1e1e2e";
+          border = "#89b4fa";
+          childBorder = "#894bfa";
+          indicator = "#89b4fa";
+          text = "#cdd6f4";
+        };
+        unfocused = {
+          background = "#89b4fa";
+          border = "#1e1e2e";
+          childBorder = "#1e1e2e";
+          indicator = "#1e1e2e";
+          text = "#cdd6f4";
+        };
+        urgent = {
+          background = "#f38ba8";
+          border = "#f38ba8";
+          childBorder = "#f38ba8";
+          indicator = "#f38ba8";
+          text = "#cdd6f4";
+        };
+        placeholder = {
+          background = "#1e1e2e";
+          border = "#89b4fa";
+          childBorder = "#89b4fa";
+          indicator = "#89b4fa";
+          text = "#cdd6f4";
+        };
+      };
 
       gaps = {
         outer = 5;
@@ -21,12 +60,12 @@
         smartGaps = true;
       };
 
-      window = { hideEdgeBorders = "smart"; };
+      window = {hideEdgeBorders = "smart";};
 
-      focus = { followMouse = "always"; };
+      focus = {followMouse = "always";};
 
       input = {
-        "type:keyboard" = { xkb_layout = "br"; };
+        "type:keyboard" = {xkb_layout = "br";};
         "type:touchpad" = {
           left_handed = "disabled";
           tap = "enabled";
@@ -35,21 +74,33 @@
           accel_profile = "flat";
           pointer_accel = "0.5";
         };
-        "type:pointer" = { natural_scroll = "enabled"; };
+        "type:pointer" = {natural_scroll = "enabled";};
       };
 
       output = {
-        "*" = { background = "~/nixcfg/assets/wallpaper.png fill"; };
-        "eDP-1" = { pos = "1920 0"; };
-        "HDMI-A-1" = { pos = "0 0"; };
+        "*" = {background = "~/nixcfg/assets/wallpaper.png fill";};
+        #"eDP-1" = {pos = "1920 0";};
+        #"HDMI-A-1" = {pos = "0 0";};
       };
 
+      workspaceOutputAssign = [
+        {
+          output = "eDP-1";
+          workspace = "1";
+        }
+        {
+          output = "HDMI-A-1";
+          workspace = "2";
+        }
+      ];
+
       startup = [
-        { command = "uwsm finalize"; }
-        { command = "uwsm app -- waybar"; }
-        { command = "openrgb -c 89b4fa"; }
-        { command = "uwsm app -- clipse -listen"; }
-        { command = "uwsm app -- gsr-ui"; }
+        {command = "uwsm finalize";}
+        {command = "uwsm app -- waybar";}
+        {command = "openrgb -c 89b4fa";}
+        {command = "uwsm app -- autotiling";}
+        {command = "uwsm app -- clipse -listen";}
+        {command = "uwsm app -- gsr-ui";}
       ];
 
       keybindings = let
@@ -66,15 +117,19 @@
         "${mod}+r" = "exec uwsm-app ${app-menu}";
         "${mod}+t" = "exec uwsm-app ${term}";
 
+        "${mod}+c" = "exec kitty -e sh -c \"swaymsg floating enable, move position center; swaymsg resize set 80ppt 80ppt && clipse\"";
+
         "${mod}+Shift+c" = "reload";
 
-        "Print" =
-          "exec wayfreeze --after-freeze-cmd 'grim -g \"$(slurp)\" $(xdg-user-dir PICTURES)/$(date +%Y-%m-%d_%H-%m-%s).png; killall wayfreeze'";
+        "Print" = "exec wayfreeze --after-freeze-cmd 'grim -g \"$(slurp)\" $(xdg-user-dir PICTURES)/$(date +%Y-%m-%d_%H-%m-%s).png; killall wayfreeze'";
 
         "${mod}+m" = "exec wlogout --protocol layer-shell";
 
         "${mod}+f" = "fullscreen";
         "${mod}+v" = "floating toggle";
+
+        "Alt+z" = "exec gsr-ui-cli toggle-show";
+        "Alt+x" = "exec gsr-ui-cli replay-save";
 
         # Move your focus around
         "${mod}+h" = "focus left";
@@ -116,8 +171,8 @@
         "${mod}+s" = "scratchpad show";
 
         # Audio
-        "XF86AudioRaiseVolume" = "exec set-volume inc 1";
-        "XF86AudioLowerVolume" = "exec set-volume dec 1";
+        "XF86AudioRaiseVolume" = "exec set-volume inc 5";
+        "XF86AudioLowerVolume" = "exec set-volume dec 5";
         "XF86AudioMute" = "exec set-volume toggle-mute";
         "XF86AudioStop" = "exec ${pkgs.playerctl}/bin/playerctl stop";
         "XF86AudioPrev" = "exec ${pkgs.playerctl}/bin/playerctl previous";

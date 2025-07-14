@@ -22,16 +22,20 @@
         enableAllSections = true;
       };
 
-      /*extensions = with inputs.firefox-addons.packages.${pkgs.system}; [
+      extensions.packages = with inputs.rycee-nurpkgs.packages.${pkgs.system}; [
         bitwarden
         ublock-origin
         canvasblocker
         new-tab-override
         ctrl-number-to-switch-tabs
-        7tv
-      ];*/
+        seventv
+        skip-redirect
+        sponsorblock
+      ];
 
       settings = {
+        # Enable extensions
+        "extensions.autoDisableScopes" = 0;
         # Disable AI Chat >3
         "browser.ml.chat.enabled" = false;
         "browser.ml.chat.hideFromLabs" = true;
@@ -39,7 +43,7 @@
         "browser.ml.chat.hideLocalhost" = true;
 
         # Enable Firefox Sync
-        "identity.fxaccounts.enabled" = true;
+        "identity.fxaccounts.enabled" = false;
 
         # Disable login manager
         "signon.rememberSignons" = false;
