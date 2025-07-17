@@ -58,7 +58,7 @@
     hostFiles = [
       (pkgs.fetchurl {
         url = "https://hblock.molinero.dev/hosts";
-        hash = "sha256-MAtKG1U6weFkLcOVzBRahTITdPO1TV9ut7ajuw/njHk=";
+        hash = "sha256-X3athYnwGKiyPRGYt6I0mvIXKr63wXmUFzcGZmiVIPY=";
       })
     ];
     networkmanager = {
