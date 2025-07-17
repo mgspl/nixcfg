@@ -1,7 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }: {
   networking.hostName = "digitalis";
   
-   imports =
+  imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
@@ -11,33 +11,25 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/340afa7d-9d40-49ad-b482-f6e62ba998bd";
+    { device = "/dev/disk/by-uuid/7df67e23-6a81-4d2a-88be-2791a50442a4";
       fsType = "btrfs";
       options = [ "subvol=root" "compress=zstd" "noatime" ];
     };
 
-  boot.initrd.luks.devices."enc".device = "/dev/disk/by-uuid/07476cb9-6b87-4a03-abc7-38512b924577";
-
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/340afa7d-9d40-49ad-b482-f6e62ba998bd";
+    { device = "/dev/disk/by-uuid/7df67e23-6a81-4d2a-88be-2791a50442a4";
       fsType = "btrfs";
       options = [ "subvol=home" "compress=zstd" "noatime" ];
     };
 
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/340afa7d-9d40-49ad-b482-f6e62ba998bd";
+    { device = "/dev/disk/by-uuid/7df67e23-6a81-4d2a-88be-2791a50442a4";
       fsType = "btrfs";
       options = [ "subvol=nix" "compress=zstd" "noatime" ];
     };
 
-  fileSystems."/var/log" =
-    { device = "/dev/disk/by-uuid/340afa7d-9d40-49ad-b482-f6e62ba998bd";
-      fsType = "btrfs";
-      options = [ "subvol=log" "compress=zstd" "noatime" ];
-    };
-
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/439B-6BD6";
+    { device = "/dev/disk/by-uuid/12CE-A600";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
@@ -54,5 +46,4 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
- 
 }
